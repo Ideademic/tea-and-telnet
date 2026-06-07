@@ -1,0 +1,10 @@
+.git
+.github
+*.db
+*.db-*
+data/
+__pycache__/
+*.pyc
+*.md
+.gitignore
+docker-compose.yml

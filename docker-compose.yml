@@ -1,0 +1,19 @@
+services:
+  tea-and-telnet:
+    # Use the published image…
+    image: ghcr.io/ideademic/tea-and-telnet:latest
+    # …or build locally instead by commenting out `image:` above and using:
+    # build: .
+    container_name: tea-and-telnet
+    restart: unless-stopped
+    ports:
+      # Expose classic telnet port 23 on the host -> 2323 in the container.
+      - "23:2323"
+    volumes:
+      - tea_data:/data
+    environment:
+      # Shown under the logo until an admin changes it in-app.
+      TT_BBS_NAME: "A Cozy Corner of the Net"
+
+volumes:
+  tea_data:
