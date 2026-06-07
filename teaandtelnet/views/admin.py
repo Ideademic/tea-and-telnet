@@ -10,6 +10,7 @@ from .base import View
 class AdminView(View):
     MENU = "menu"
     BBSNAME = "bbsname"
+    SLOTS = "slots"
     ROOMS = "rooms"
     TABLES = "tables"
     USERS = "users"
@@ -19,6 +20,7 @@ class AdminView(View):
 
     MENU_ITEMS = [
         "Set BBS name",
+        "Set online slots",
         "Manage chat rooms",
         "Manage tables",
         "Manage users",
@@ -73,6 +75,14 @@ class AdminView(View):
             self._frame(session, ["  Shown under the logo on every screen.", "", "  " + field],
                         " Enter to save · Esc to cancel",
                         cursor=(6, 2 + len("BBS name: ") + len(self.editor.display()) + 1))
+        elif self.mode == self.SLOTS:
+            field = "Online slots: " + self.editor.display()
+            self._frame(session,
+                        ["  Cosmetic 'phone line' capacity. The status bar shows",
+                         "  \"n/x online\" when set. 0 hides it (just \"n online\").",
+                         "", "  " + field],
+                        " Enter to save · Esc to cancel",
+                        cursor=(7, 2 + len("Online slots: ") + len(self.editor.display()) + 1))
         elif self.mode == self.ROOMS:
             self._render_collection(session, "Chat rooms", db.list_rooms(),
                                     lambda r: f"{r['name']}  —  {r['topic']}")
@@ -138,6 +148,8 @@ class AdminView(View):
             return self._handle_menu(session, key)
         if self.mode == self.BBSNAME:
             return self._handle_bbsname(session, key)
+        if self.mode == self.SLOTS:
+            return self._handle_slots(session, key)
         if self.mode == self.ROOMS:
             return self._handle_collection(session, key, "room")
         if self.mode == self.TABLES:
@@ -162,6 +174,10 @@ class AdminView(View):
             if choice == "Set BBS name":
                 self.editor = LineEditor(text=db.bbs_name(), max_len=60)
                 self.mode = self.BBSNAME
+            elif choice == "Set online slots":
+                cur = db.max_slots()
+                self.editor = LineEditor(text=str(cur) if cur else "", max_len=5)
+                self.mode = self.SLOTS
             elif choice == "Manage chat rooms":
                 self.list_sel = 0
                 self.mode = self.ROOMS
@@ -191,12 +207,34 @@ class AdminView(View):
         self._render(session)
         return None
 
+    def _handle_slots(self, session, key):
+        result = self.editor.handle(key)
+        if result is None:
+            self._render(session)
+            return None
+        signal, value = result
+        if signal != CANCEL:
+            value = value.strip()
+            if value == "" or value == "0":
+                db.set_max_slots(0)
+                self.message = "Online slots hidden."
+            elif value.isdigit():
+                db.set_max_slots(int(value))
+                self.message = f"Online slots set to {int(value)}."
+            else:
+                self.message = "Please enter a number."
+                self.message_color = "red"
+        self.mode = self.MENU
+        self._render(session)
+        return None
+
     def _handle_collection(self, session, key, target):
         rows = db.list_rooms() if target == "room" else db.list_boards()
         add_idx = len(rows)
         if key in ("ESC", "q", "Q", "LEFT"):
             self.mode = self.MENU
-            self.sel = 1 if target == "room" else 2
+            label = "Manage chat rooms" if target == "room" else "Manage tables"
+            self.sel = self.MENU_ITEMS.index(label)
             self._render(session)
             return None
         if key == "UP":
@@ -268,7 +306,7 @@ class AdminView(View):
         users = db.list_users()
         if key in ("ESC", "q", "Q", "LEFT"):
             self.mode = self.MENU
-            self.sel = 3
+            self.sel = self.MENU_ITEMS.index("Manage users")
             self._render(session)
             return None
         if key == "UP":

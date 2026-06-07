@@ -148,6 +148,16 @@ def bbs_name() -> str:
     return get_setting("bbs_name") or config.DEFAULT_BBS_NAME
 
 
+def max_slots() -> int:
+    """Cosmetic 'phone line' capacity shown in the status bar; 0 = hidden."""
+    v = get_setting("max_slots")
+    return int(v) if v and v.isdigit() else 0
+
+
+def set_max_slots(n: int) -> None:
+    set_setting("max_slots", str(max(0, int(n))))
+
+
 # --------------------------------------------------------------------------- #
 # Users / auth
 # --------------------------------------------------------------------------- #

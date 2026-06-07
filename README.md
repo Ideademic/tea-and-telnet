@@ -5,14 +5,19 @@ password, and you land on a three-column home screen you drive with the arrow
 keys:
 
 ```
-                    T E A   &   T E L N E T
+                    ╔══════════════════╗
+                    ║   TEA & TELNET   ║
+                    ╚══════════════════╝
                   ~ A Cozy Corner of the Net ~
  ┌─ Chats ─────────────┐ ┌─ Tables ────────────┐ ┌─ Programs ──────────┐
  │ Lobby               │ │ General         (3) │ │ Settings            │
  │ Tech Talk           │ │ Trade & Barter      │ │ Admin Settings      │
  │ Late Night          │ │ The Archive         │ │                     │
  └─────────────────────┘ └─────────────────────┘ └─────────────────────┘
+ sysop [admin]  ·  2/16 online  ·  ↑↓ move  ←→ column  Enter open  Q quit
 ```
+
+The whole interface is rendered in a single-hue amber/yellow theme.
 
 * **Chats** — realtime chat rooms. Press <kbd>Enter</kbd> on a room to join;
   messages fan out live to everyone inside, with join/leave notices.
@@ -20,8 +25,11 @@ keys:
   per-user **read pointer**: unread posts are flagged, <kbd>N</kbd> jumps to the
   next unread, and reading advances your pointer. Post and reply in-line.
 * **Programs** — **Settings** (change password, who's online, account info) and,
-  for admins, **Admin Settings** (rename the BBS, add/remove chat rooms and
-  tables, and promote/demote admins).
+  for admins, **Admin Settings** (rename the BBS, set a cosmetic online-slot
+  count, add/remove chat rooms and tables, and promote/demote admins).
+
+The status bar shows `n online`, or `n/x online` once an admin sets an online-slot
+count — a purely decorative nod to the days of one phone line per node.
 
 The **first account created becomes an admin.** It's built in pure-stdlib
 Python — no dependencies — so the container image is tiny.
@@ -37,8 +45,9 @@ Python — no dependencies — so the container image is tiny.
 | <kbd>Ctrl-X</kbd> | Save a post you're writing |
 | <kbd>Q</kbd> | Quit (from the home screen) |
 
-> The block logo looks best in a terminal at least 96 columns wide; narrower
-> terminals get a compact text logo automatically.
+> The full block logo shows in terminals at least 97 columns wide; narrower
+> terminals (e.g. a standard 80-column `telnet`) automatically get a compact
+> `TEA & TELNET` double-line box instead.
 
 ## Run it with Docker
 
@@ -130,3 +139,11 @@ telnet localhost 2323
 Passwords are stored as salted PBKDF2-SHA256 hashes. Telnet is, of course,
 **unencrypted** — fine for a hobby BBS on a trusted network. For exposure to the
 wider internet, put it behind a VPN or an SSH/`stunnel` front end.
+
+## License
+
+Tea & Telnet is licensed under the **GNU Affero General Public License v3.0**
+(AGPL-3.0) — see [`LICENSE`](LICENSE). Because it's network-facing software, the
+AGPL's key point applies: if you run a modified version and let other people
+connect to it, you must offer those users the corresponding source of your
+modified version.

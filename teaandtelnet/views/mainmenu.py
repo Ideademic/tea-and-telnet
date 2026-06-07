@@ -71,12 +71,14 @@ class MainMenuView(View):
         while len(lines) < h - 1:
             lines.append("")
         online = hub.online_count()
+        slots = db.max_slots()
+        online_txt = f"{online}/{slots} online" if slots else f"{online} online"
         admin_tag = screen.color(" [admin]", "brmagenta") if session.user["is_admin"] else ""
         status = (
             screen.color(f" {session.user['username']}", "brgreen")
             + admin_tag
             + screen.DIM
-            + f"  ·  {online} online  ·  ↑↓ move  ←→ column  Enter open  Q quit"
+            + f"  ·  {online_txt}  ·  ↑↓ move  ←→ column  Enter open  Q quit"
             + screen.RESET
         )
         if self.flash:

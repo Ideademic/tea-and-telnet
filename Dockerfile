@@ -3,7 +3,8 @@ FROM python:3.12-slim
 
 LABEL org.opencontainers.image.title="Tea & Telnet" \
       org.opencontainers.image.description="A cozy mini BBS served over telnet" \
-      org.opencontainers.image.source="https://github.com/Ideademic/tea-and-telnet"
+      org.opencontainers.image.source="https://github.com/Ideademic/tea-and-telnet" \
+      org.opencontainers.image.licenses="AGPL-3.0-only"
 
 # Don't run as root.
 RUN useradd --create-home --uid 10001 bbs
