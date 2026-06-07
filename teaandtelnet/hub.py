@@ -20,6 +20,10 @@ class Hub:
     def online_count(self) -> int:
         return sum(1 for s in self.sessions if s.user is not None)
 
+    def connection_count(self) -> int:
+        """Live connections (a 'line' is occupied from connect, before login)."""
+        return len(self.sessions)
+
     def online_names(self) -> list[str]:
         return sorted(s.user["username"] for s in self.sessions if s.user is not None)
 

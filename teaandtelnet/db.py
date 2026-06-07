@@ -149,7 +149,7 @@ def bbs_name() -> str:
 
 
 def max_slots() -> int:
-    """Cosmetic 'phone line' capacity shown in the status bar; 0 = hidden."""
+    """Max simultaneous connections ('phone lines'); 0 = unlimited/hidden."""
     v = get_setting("max_slots")
     return int(v) if v and v.isdigit() else 0
 

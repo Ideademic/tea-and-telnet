@@ -78,11 +78,12 @@ class AdminView(View):
         elif self.mode == self.SLOTS:
             field = "Online slots: " + self.editor.display()
             self._frame(session,
-                        ["  Cosmetic 'phone line' capacity. The status bar shows",
-                         "  \"n/x online\" when set. 0 hides it (just \"n online\").",
+                        ["  Max simultaneous connections ('phone lines'). Extra",
+                         "  callers get a busy signal. Status bar shows \"n/x online\".",
+                         "  0 = unlimited (status shows just \"n online\").",
                          "", "  " + field],
                         " Enter to save · Esc to cancel",
-                        cursor=(7, 2 + len("Online slots: ") + len(self.editor.display()) + 1))
+                        cursor=(8, 2 + len("Online slots: ") + len(self.editor.display()) + 1))
         elif self.mode == self.ROOMS:
             self._render_collection(session, "Chat rooms", db.list_rooms(),
                                     lambda r: f"{r['name']}  —  {r['topic']}")

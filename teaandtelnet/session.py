@@ -87,6 +87,24 @@ class Session:
     async def run(self) -> None:
         from .views.login import LoginView
 
+        # Enforce the "phone line" cap: if every slot is taken, give the caller
+        # a busy signal and hang up before they occupy a line.
+        slots = db.max_slots()
+        if slots and hub.connection_count() >= slots:
+            try:
+                self.write(
+                    f"\r\n  Sorry — all {slots} lines are busy right now.\r\n"
+                    "  Please ring back in a little while. 73!\r\n\r\n"
+                )
+                await self.writer.drain()
+            except Exception:
+                pass
+            try:
+                self.writer.close()
+            except Exception:
+                pass
+            return
+
         hub.connect(self)
         self._raw_write(INITIAL_NEGOTIATION)
         self.write(screen.CLEAR + screen.HIDE_CURSOR)
