@@ -92,10 +92,8 @@ class Session:
         slots = db.max_slots()
         if slots and hub.connection_count() >= slots:
             try:
-                self.write(
-                    f"\r\n  Sorry — all {slots} lines are busy right now.\r\n"
-                    "  Please ring back in a little while. 73!\r\n\r\n"
-                )
+                msg = db.format_message(db.busy_message())
+                self.write(f"\r\n  {msg}\r\n\r\n")
                 await self.writer.drain()
             except Exception:
                 pass

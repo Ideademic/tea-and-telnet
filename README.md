@@ -25,12 +25,17 @@ The whole interface is rendered in a single-hue amber/yellow theme.
   per-user **read pointer**: unread posts are flagged, <kbd>N</kbd> jumps to the
   next unread, and reading advances your pointer. Post and reply in-line.
 * **Programs** — **Settings** (change password, who's online, account info) and,
-  for admins, **Admin Settings** (rename the BBS, set an online-slot limit,
-  add/remove chat rooms and tables, and promote/demote admins).
+  for admins, **Admin Settings** (rename the BBS, set an online-slot limit, edit
+  the quit and busy messages, add/remove chat rooms and tables, and
+  promote/demote admins).
 
 An admin can cap the number of simultaneous connections ("phone lines"). When
 the BBS is full, extra callers get a busy signal and are hung up; the status bar
 shows `n/x online` instead of plain `n online`. Set it to `0` for unlimited.
+
+The **quit message** (shown on sign-off) and the **busy message** (shown when
+all lines are full) are admin-editable; use `{slots}` in either to drop in the
+configured line count.
 
 The **first account created becomes an admin.** It's built in pure-stdlib
 Python — no dependencies — so the container image is tiny.

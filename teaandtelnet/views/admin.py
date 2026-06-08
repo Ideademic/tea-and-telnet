@@ -11,6 +11,8 @@ class AdminView(View):
     MENU = "menu"
     BBSNAME = "bbsname"
     SLOTS = "slots"
+    QUITMSG = "quitmsg"
+    BUSYMSG = "busymsg"
     ROOMS = "rooms"
     TABLES = "tables"
     USERS = "users"
@@ -21,6 +23,8 @@ class AdminView(View):
     MENU_ITEMS = [
         "Set BBS name",
         "Set online slots",
+        "Set quit message",
+        "Set busy message",
         "Manage chat rooms",
         "Manage tables",
         "Manage users",
@@ -84,6 +88,15 @@ class AdminView(View):
                          "", "  " + field],
                         " Enter to save · Esc to cancel",
                         cursor=(8, 2 + len("Online slots: ") + len(self.editor.display()) + 1))
+        elif self.mode in (self.QUITMSG, self.BUSYMSG):
+            if self.mode == self.QUITMSG:
+                hint = "  Shown when a user quits. {slots} = online-slot count."
+            else:
+                hint = "  Shown when the BBS is full. Use {slots} for the line count."
+            value = self.editor.display()
+            body = [hint, "", "  > " + value]
+            self._frame(session, body, " Enter to save · Esc to cancel",
+                        cursor=(6, 2 + len("> ") + len(value) + 1))
         elif self.mode == self.ROOMS:
             self._render_collection(session, "Chat rooms", db.list_rooms(),
                                     lambda r: f"{r['name']}  —  {r['topic']}")
@@ -151,6 +164,8 @@ class AdminView(View):
             return self._handle_bbsname(session, key)
         if self.mode == self.SLOTS:
             return self._handle_slots(session, key)
+        if self.mode in (self.QUITMSG, self.BUSYMSG):
+            return self._handle_message(session, key)
         if self.mode == self.ROOMS:
             return self._handle_collection(session, key, "room")
         if self.mode == self.TABLES:
@@ -179,6 +194,12 @@ class AdminView(View):
                 cur = db.max_slots()
                 self.editor = LineEditor(text=str(cur) if cur else "", max_len=5)
                 self.mode = self.SLOTS
+            elif choice == "Set quit message":
+                self.editor = LineEditor(text=db.quit_message(), max_len=200)
+                self.mode = self.QUITMSG
+            elif choice == "Set busy message":
+                self.editor = LineEditor(text=db.busy_message(), max_len=200)
+                self.mode = self.BUSYMSG
             elif choice == "Manage chat rooms":
                 self.list_sel = 0
                 self.mode = self.ROOMS
@@ -225,6 +246,26 @@ class AdminView(View):
             else:
                 self.message = "Please enter a number."
                 self.message_color = "red"
+        self.mode = self.MENU
+        self._render(session)
+        return None
+
+    def _handle_message(self, session, key):
+        is_quit = self.mode == self.QUITMSG
+        result = self.editor.handle(key)
+        if result is None:
+            self._render(session)
+            return None
+        signal, value = result
+        if signal != CANCEL:
+            value = value.strip()
+            if value:
+                if is_quit:
+                    db.set_quit_message(value)
+                    self.message = "Quit message updated."
+                else:
+                    db.set_busy_message(value)
+                    self.message = "Busy message updated."
         self.mode = self.MENU
         self._render(session)
         return None

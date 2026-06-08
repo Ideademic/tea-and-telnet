@@ -158,6 +158,27 @@ def set_max_slots(n: int) -> None:
     set_setting("max_slots", str(max(0, int(n))))
 
 
+def quit_message() -> str:
+    return get_setting("quit_message") or config.DEFAULT_QUIT_MESSAGE
+
+
+def set_quit_message(text: str) -> None:
+    set_setting("quit_message", text)
+
+
+def busy_message() -> str:
+    return get_setting("busy_message") or config.DEFAULT_BUSY_MESSAGE
+
+
+def set_busy_message(text: str) -> None:
+    set_setting("busy_message", text)
+
+
+def format_message(text: str) -> str:
+    """Fill placeholders in an admin-editable message."""
+    return text.replace("{slots}", str(max_slots()))
+
+
 # --------------------------------------------------------------------------- #
 # Users / auth
 # --------------------------------------------------------------------------- #

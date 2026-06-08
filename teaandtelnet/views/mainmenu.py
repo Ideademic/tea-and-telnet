@@ -96,7 +96,7 @@ class MainMenuView(View):
 
         if key in ("q", "Q", "CTRL_C"):
             session.write(screen.RESET + screen.SHOW_CURSOR + screen.CLEAR)
-            session.write("Thanks for visiting Tea & Telnet. 73!\r\n")
+            session.write(db.format_message(db.quit_message()) + "\r\n")
             return QUIT
         if key == "LEFT":
             self.col = (self.col - 1) % 3
